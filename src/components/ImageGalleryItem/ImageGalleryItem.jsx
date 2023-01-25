@@ -8,7 +8,6 @@ export class ImageGalleryItem extends Component {
         this.props.modal()
       }
     
-    
     render () {
         return (
             <>

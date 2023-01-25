@@ -18,15 +18,16 @@ export class ImageGallery extends Component {
 
         if (prevRequest !== request || prevPage !== page ) {
             this.props.onChange(true)
-        }
+        
             try {
                 const data = await pixabayApi(request, page)
                 if (data.hits.length === 0) {
-                    toast.warn('No find images')
+                    toast.error('No find images')
                     return;
                 }
                 if (page === 1) {
                     toast.success(`We found ${data.total} images`)
+                    return
                 }
                 this.props.imagesList(data.hits)
                 this.props.totalHits(data.total)
@@ -36,6 +37,7 @@ export class ImageGallery extends Component {
             } finally {
                 this.props.onChange(false)
             }
+        }
     }
      
     render() {

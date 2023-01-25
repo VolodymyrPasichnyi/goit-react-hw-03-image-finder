@@ -60,7 +60,7 @@ export class App extends Component {
     const { page, search } = this.state
   return (
       <>
-      <Toaster/>
+      <Toaster />
       <Searchbar
         onSubmit={this.handleSubmit} 
       />
