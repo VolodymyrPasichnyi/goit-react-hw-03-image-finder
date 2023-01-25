@@ -1,25 +1,29 @@
 import { Component } from "react"
-
+import { Info } from "./Info/Info";
+import { Searchbar } from "./Searchbar/Searchbar";
 
 
 
 export class App extends Component {
   state = {
-    gallery: null,
+    searchText: '', 
   }
-  componentDidMount () {
-    fetch(`https://pixabay.com/api/?q=cat&page=1&key=your_key&image_type=photo&orientation=horizontal&per_page=12`)
-      .then(res => res.json())
-      .then(img => this.setState({ img }));
+
+
+  handleSubmit = (searchText) => {
+    this.setState({ searchText })
   }
 
   render() {
   return (
-    <div>
-      {this.state.gallery && (
-        <div>FKLALSdkdads</div>
-      )}
-    </div>
+    <>
+    <Searchbar
+      onSearch={this.handleSubmit} 
+    />
+    <Info
+      value={this.state.searchText}
+    />
+    </>
   );
 }
 }
