@@ -5,12 +5,12 @@ import axios from "axios"
 const BASE_URL = 'https://pixabay.com/api/'
 const API_KEY = '32327461-3975e0cca8f9f86b28915263f'
 
-export const imagesAPI = async (searchQuery, page) => {  
+export const pixabayApi = async (search, page) => {  
   try {
     const { data } = await axios.get(BASE_URL, {
         params: {
           key: API_KEY,
-          q: searchQuery,
+          q: search,
           page: page,
           image_type: 'photo',
           orientation: 'horizontal',
@@ -24,7 +24,7 @@ export const imagesAPI = async (searchQuery, page) => {
 }
 
 
-imagesAPI.propTypes = {
-  searchQuery: PropTypes.string.isRequired,
-    page: PropTypes.number.isRequired,
+pixabayApi.propTypes = {
+  search: PropTypes.string.isRequired,
+  page: PropTypes.number.isRequired,
 }

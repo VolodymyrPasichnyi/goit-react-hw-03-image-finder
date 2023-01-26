@@ -32,7 +32,7 @@ export class App extends Component {
   }
 
   toggleModal = () => {
-    this.setState(({ modal }) => ({ showModal: !modal }))
+    this.setState(({ modal }) => ({ modal: !modal }))
   }
 
   largeImages = largeImage => {
