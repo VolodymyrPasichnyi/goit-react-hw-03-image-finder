@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { pixabayApi } from 'services/pixabayApi';
+import { pixabayApi } from 'components/services/pixabayApi';
 import toast from 'react-hot-toast';
 import PropTypes from 'prop-types';
 import css from '../ImageGallery/ImageGallery.module.css'
