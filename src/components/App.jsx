@@ -13,7 +13,7 @@ export class App extends Component {
     page: 1,
     list: [],
     status: false,
-    totalHits: 0,
+    totalhit: 0,
     modal: false,
     largeImage: null,
   }
@@ -26,15 +26,16 @@ export class App extends Component {
     this.setState({ search, page: 1, list: [] })
   }
 
-
   imagesList = (data) => {
     if (!this.state.list) {
-      return this.setState({ list: data })
+       this.setState({ list: data })
+       return
     }
     if (this.state.list) {
-      return this.setState(({ list }) => ({
+       this.setState(({ list }) => ({
         list: [...list,...data],
       }))
+      return  
     }
   }
 
@@ -51,15 +52,21 @@ export class App extends Component {
   }
 
   imageModal = () => {
-    this.setState(({ modal }) =>  {
-      return { modal: !modal }
-    })
+    this.setState(({ modal }) =>  ({ modal: !modal }))
   }
 
   render() {
-    const { page, search } = this.state
+    const {     
+      search,
+      page,
+      list,
+      status,
+      totalhit,
+      modal,
+      largeImage 
+    } = this.state
   return (
-      <>
+      <div>
       <Toaster />
       <Searchbar
         onSubmit={this.handleSubmit} 
@@ -67,11 +74,12 @@ export class App extends Component {
       <ImageGallery
         page={page} 
         search={search}
-        onChange={this.handleChange}
+        list={list}
+        handleChange={this.handleChange}
         imagesList={this.imagesList}
         totalHits={this.totalHits}
-      />
-      {this.state.list?.map(el => (
+      >
+      {list?.map(el => (
       <ImageGalleryItem
         key={el.id}
         img={el.webformatUrl}
@@ -81,21 +89,21 @@ export class App extends Component {
         getLargeImg={this.getLargeImg}
       ></ImageGalleryItem>
       ))}
-      {this.state.status && <Loader />}
-      {this.state.modal && (
+     </ImageGallery>
+      {status && <Loader />}
+
+      {modal && (
       <Modal 
-        largeImage={this.state.largeImage}
+        largeImage={largeImage}
         modal={this.imageModal}
         />
       )}
-      {this.state.list && this.state.status && this.state.totalHits > 12 && (
+      {list && totalhit > 12 && (
       <Button 
         loadMoreButton={this.loadMoreButton}
       />
       )}
-     
-
-      </>
+      </div>
   );
 }
 }

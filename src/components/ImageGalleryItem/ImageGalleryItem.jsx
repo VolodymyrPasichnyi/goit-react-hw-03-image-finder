@@ -9,14 +9,11 @@ export class ImageGalleryItem extends Component {
       }
     
     render () {
+        const { img, tags } = this.props
         return (
-            <>
-            <li className={css.ImageGalleryItem}
-                modal={this.modalClick}
-            >
-                <img src={this.props.img} alt={this.props.tags} />
+            <li className={css.ImageGalleryItem} onClick={this.modalClick}>
+                <img src={img} alt={tags} />
             </li>
-            </>
         )
     }
 }

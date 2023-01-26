@@ -17,7 +17,7 @@ export class ImageGallery extends Component {
         const prevPage = prevProps.page
 
         if (prevRequest !== request || prevPage !== page ) {
-            this.props.onChange(true)
+            this.props.handleChange(true)
         
             try {
                 const data = await pixabayApi(request, page)
@@ -26,25 +26,28 @@ export class ImageGallery extends Component {
                     return;
                 }
                 if (page === 1) {
-                    toast.success(`We found ${data.total} images`)
+                    toast.success(`We found ${data.totalHits} images`)
                     return
                 }
                 this.props.imagesList(data.hits)
-                this.props.totalHits(data.total)
+                this.props.totalHits(data.totalHits)
             } catch(error) {
                 this.setState({ error })
-                return toast.error('Error')
+                return toast.error(`Error ${this.state.error}`)
             } finally {
-                this.props.onChange(false)
+                this.props.handleChange(false)
             }
         }
     }
      
     render() {
+        const { list } = this.props
         return (
             <div>
-              {this.props.imagesList && 
-              <ul className={css.ImageGallery}>{this.props.children}</ul>}
+              {list && 
+              <ul className={css.ImageGallery}>
+                {this.props.children}
+              </ul>}
             </div>
         )
     }   
@@ -54,7 +57,9 @@ export class ImageGallery extends Component {
 ImageGallery.propTypes = {
     search: PropTypes.string.isRequired,
     page: PropTypes.number.isRequired,
-    onChange: PropTypes.func.isRequired,
+    handleChange: PropTypes.func.isRequired,
     imagesList: PropTypes.func.isRequired,
     totalHits: PropTypes.func.isRequired,
+    list: PropTypes.array.isRequired,
+    children: PropTypes.array.isRequired,
 }
