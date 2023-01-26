@@ -1,113 +1,105 @@
-import { Component } from "react"
-import { Toaster } from "react-hot-toast";
-import { Button } from "./Button/Button";
-import { ImageGallery } from "./ImageGallery/ImageGallery";
-import { ImageGalleryItem } from "./ImageGalleryItem/ImageGalleryItem";
-import { Modal } from "./Modal/Modal";
-import { Searchbar } from "./Searchbar/Searchbar";
-import { Loader } from "./Loader/Loader";
+import React, { Component } from 'react';
+import { Toaster } from 'react-hot-toast';
+import { Searchbar } from './Searchbar/Searchbar';
+import { ImageGallery } from './ImageGallery/ImageGallery';
+import { ImageGalleryItem } from './ImageGalleryItem/ImageGalleryItem';
+import { Modal } from './Modal/Modal';
+import { Button } from './Button/Button';
+import { Loader } from './Loader/Loader';
+
 
 export class App extends Component {
   state = {
-    searchQuery: '',
+    search: '',
     page: 1,
-    showModal: false,
-    imageList: [],
-    largeImage: null,
+    list: [],
     totalhits: 0,
-    isLoading: false,
+    largeImage: null,
+    status: false,
+    modal: false,
+  };
+
+  handleSubmit = search => {
+    this.setState({ search, page: 1, list: [] })
   }
 
+  loadMore = () => {
+    this.setState(({ page }) => ({ page: page + 1 }))
+  }
 
-  handleSubmit = searchQuery => {
-    this.setState({ searchQuery, page: 1, imageList: [] });
-  };
+  statusChange = value => {
+    this.setState({ status: value })
+  }
 
-  changeLoadingStatus = value => {
-    this.setState({ isLoading: value });
-  };
+  toggleModal = () => {
+    this.setState(({ modal }) => ({ showModal: !modal }))
+  }
 
-  getTotalHits = totalhits => {
-    this.setState({ totalhits });
-  };
+  largeImages = largeImage => {
+    this.setState({ largeImage })
+  }
 
-  getImageList = data => {
-    if (!this.state.imageList) {
-      this.setState({ imageList: data });
-      return;
+  totalHits = totalhits => {
+    this.setState({ totalhits })
+  }
+
+  imageList = data => {
+    if (!this.state.list) {
+      this.setState({ list: data })
+      return
     }
-    if (this.state.imageList) {
-      this.setState(({ imageList }) => ({
-        imageList: [...imageList, ...data],
-      }));
-      return;
+    if (this.state.list) {
+      this.setState(({ list }) => ({
+        list: [...list, ...data],
+      }))
+      return
     }
-  };
-
-
-
-  // getLargeImg = (largeImage) => {
-  //   this.setState({ largeImage })
-  // }
-
-  // loadMoreButton = () => {
-  //   this.setState(prevState => ({ page: prevState.page + 1 }))
-  // }
-
-  // imageModal = () => {
-  //   this.setState(({ modal }) =>  ({ modal: !modal }))
-  // }
+  }
 
   render() {
-    const {     
-      searchQuery,
+    const {
+      search,
       page,
-      showModal,
-      imageList,
-      largeImage,
+      list,
       totalhits,
-      isLoading,
+      largeImage,
+      status,
+      modal,
     } = this.state
-  return (
+    return (
       <div>
-      <Toaster />
-      <Searchbar
-        onSubmit={this.handleSubmit} 
-      />
-      <ImageGallery
-        page={page} 
-        searchQuery={searchQuery}
-        imageList={imageList}
-        getImageList={this.getImageList}
-        getTotalHits={this.getTotalHits}
-        changeLoadingStatus={this.changeLoadingStatus}
-      >
-      {imageList?.map(image => (
-      <ImageGalleryItem
-      key={image.webformatURL}
-      imageUrl={image.webformatURL}
-      tags={image.tags}
-        // largeImg={el.largeImageURL}
-        // modal={this.imageModal}
-        // getLargeImg={this.getLargeImg}
-      ></ImageGalleryItem>
-      ))}
-     </ImageGallery>
-      {/* {status && <Loader />}
-
-      {modal && (
-      <Modal 
-        largeImage={largeImage}
-        modal={this.imageModal}
-        />
-      )}
-      {list && totalhit > 12 && (
-      <Button 
-        loadMoreButton={this.loadMoreButton}
-      />
-      )} */}
+        <Toaster />
+        <Searchbar onSubmit={this.handleSubmit} />
+        <ImageGallery
+          search={search}
+          page={page}
+          list={list}
+          imageList={this.imageList}
+          totalHits={this.totalHits}
+          statusChange={this.statusChange}
+        >
+          {list?.map(el => (
+            <ImageGalleryItem
+              key={el.id}
+              image={el.webformatURL}
+              largeImg={el.largeImageURL}
+              tags={el.tags}
+              toggleModal={this.toggleModal}
+              largeImages={this.largeImages}
+            ></ImageGalleryItem>
+          ))}
+        </ImageGallery>
+        {status && <Loader />}
+        {modal && (
+          <Modal 
+            largeImage={largeImage}
+            toggleModal={this.toggleModal}
+          />
+        )}
+        {list && totalhits > 12 && (
+          <Button loadMore={this.loadMore} />
+        )}
       </div>
-  );
+    )
+  }
 }
-}
-
