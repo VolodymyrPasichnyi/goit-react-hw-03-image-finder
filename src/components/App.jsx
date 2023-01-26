@@ -9,61 +9,64 @@ import { Loader } from "./Loader/Loader";
 
 export class App extends Component {
   state = {
-    search: '',
+    searchQuery: '',
     page: 1,
-    list: [],
-    status: false,
-    totalhit: 0,
-    modal: false,
+    showModal: false,
+    imageList: [],
     largeImage: null,
+    totalhits: 0,
+    isLoading: false,
   }
 
-  handleChange = (value) => {
-    this.setState({ status: value })
-  }
 
-  handleSubmit = (search) => {
-    this.setState({ search, page: 1, list: [] })
-  }
+  handleSubmit = searchQuery => {
+    this.setState({ searchQuery, page: 1, imageList: [] });
+  };
 
-  imagesList = (data) => {
-    if (!this.state.list) {
-       this.setState({ list: data })
-       return
+  changeLoadingStatus = value => {
+    this.setState({ isLoading: value });
+  };
+
+  getTotalHits = totalhits => {
+    this.setState({ totalhits });
+  };
+
+  getImageList = data => {
+    if (!this.state.imageList) {
+      this.setState({ imageList: data });
+      return;
     }
-    if (this.state.list) {
-       this.setState(({ list }) => ({
-        list: [...list,...data],
-      }))
-      return  
+    if (this.state.imageList) {
+      this.setState(({ imageList }) => ({
+        imageList: [...imageList, ...data],
+      }));
+      return;
     }
-  }
+  };
 
-  totalHits = (total) => {
-    this.setState({ total })
-  }
 
-  getLargeImg = (largeImage) => {
-    this.setState({ largeImage })
-  }
 
-  loadMoreButton = () => {
-    this.setState(prevState => ({ page: prevState.page + 1 }))
-  }
+  // getLargeImg = (largeImage) => {
+  //   this.setState({ largeImage })
+  // }
 
-  imageModal = () => {
-    this.setState(({ modal }) =>  ({ modal: !modal }))
-  }
+  // loadMoreButton = () => {
+  //   this.setState(prevState => ({ page: prevState.page + 1 }))
+  // }
+
+  // imageModal = () => {
+  //   this.setState(({ modal }) =>  ({ modal: !modal }))
+  // }
 
   render() {
     const {     
-      search,
+      searchQuery,
       page,
-      list,
-      status,
-      totalhit,
-      modal,
-      largeImage 
+      showModal,
+      imageList,
+      largeImage,
+      totalhits,
+      isLoading,
     } = this.state
   return (
       <div>
@@ -73,24 +76,24 @@ export class App extends Component {
       />
       <ImageGallery
         page={page} 
-        search={search}
-        list={list}
-        handleChange={this.handleChange}
-        imagesList={this.imagesList}
-        totalHits={this.totalHits}
+        searchQuery={searchQuery}
+        imageList={imageList}
+        getImageList={this.getImageList}
+        getTotalHits={this.getTotalHits}
+        changeLoadingStatus={this.changeLoadingStatus}
       >
-      {list?.map(el => (
+      {imageList?.map(image => (
       <ImageGalleryItem
-        key={el.id}
-        img={el.webformatUrl}
-        tags={el.tags}
-        largeImg={el.largeImageURL}
-        modal={this.imageModal}
-        getLargeImg={this.getLargeImg}
+      key={image.webformatURL}
+      imageUrl={image.webformatURL}
+      tags={image.tags}
+        // largeImg={el.largeImageURL}
+        // modal={this.imageModal}
+        // getLargeImg={this.getLargeImg}
       ></ImageGalleryItem>
       ))}
      </ImageGallery>
-      {status && <Loader />}
+      {/* {status && <Loader />}
 
       {modal && (
       <Modal 
@@ -102,7 +105,7 @@ export class App extends Component {
       <Button 
         loadMoreButton={this.loadMoreButton}
       />
-      )}
+      )} */}
       </div>
   );
 }

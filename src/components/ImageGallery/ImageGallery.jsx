@@ -1,5 +1,5 @@
 import { Component } from "react";
-import { pixabayApi } from "components/services/pixabayApi";
+import { imagesAPI } from "components/services/pixabayApi";
 import { toast } from "react-hot-toast";
 import PropTypes from 'prop-types'
 import css from '../ImageGallery/ImageGallery.module.css'
@@ -11,40 +11,42 @@ export class ImageGallery extends Component {
     }
 
     async componentDidUpdate(prevProps) {
-        const request = this.props.search
-        const prevRequest = prevProps.search
-        const page = this.props.page
-        const prevPage = prevProps.page
-
-        if (prevRequest !== request || prevPage !== page ) {
-            this.props.handleChange(true)
-        
-            try {
-                const data = await pixabayApi(request, page)
-                if (data.hits.length === 0) {
-                    toast.error('No find images')
-                    return;
-                }
-                if (page === 1) {
-                    toast.success(`We found ${data.totalHits} images`)
-                    return
-                }
-                this.props.imagesList(data.hits)
-                this.props.totalHits(data.totalHits)
-            } catch(error) {
-                this.setState({ error })
-                return toast.error(`Error ${this.state.error}`)
-            } finally {
-                this.props.handleChange(false)
+        const currentSearchQuery = this.props.searchQuery;
+        const currentPage = this.props.page;
+        const prevSearchQuery = prevProps.searchQuery;
+        const prevPage = prevProps.page;
+    
+        if (prevSearchQuery !== currentSearchQuery || prevPage !== currentPage) {
+          this.props.changeLoadingStatus(true);
+    
+          try {
+            const data = await imagesAPI(currentSearchQuery, currentPage);
+            if (data.hits.length === 0) {
+              toast.error(`Sorry, there are no images matching your search query`);
+              return;
             }
+            if (currentPage === 1) {
+              toast.success(`Hooray! We found ${data.totalHits} images.`);
+            }
+    
+            this.props.getImageList(data.hits);
+            this.props.getTotalHits(data.totalHits);
+          } catch (error) {
+            this.setState({ error });
+            return toast.error(
+              `Something went wrong. ${this.state.error}. Please, try again later`
+            );
+          } finally {
+            this.props.changeLoadingStatus(false);
+          }
         }
     }
      
     render() {
-        const { list } = this.props
+        const { imagesList } = this.props
         return (
             <div>
-              {list && 
+              {imagesList && 
               <ul className={css.ImageGallery}>
                 {this.props.children}
               </ul>}
@@ -55,11 +57,11 @@ export class ImageGallery extends Component {
 
 
 ImageGallery.propTypes = {
-    search: PropTypes.string.isRequired,
+    changeLoadingStatus: PropTypes.func.isRequired,
+    getImageList: PropTypes.func.isRequired,
+    getTotalHits: PropTypes.func.isRequired,
+    searchQuery: PropTypes.string.isRequired,
     page: PropTypes.number.isRequired,
-    handleChange: PropTypes.func.isRequired,
-    imagesList: PropTypes.func.isRequired,
-    totalHits: PropTypes.func.isRequired,
-    list: PropTypes.array.isRequired,
+    imageList: PropTypes.array,
     children: PropTypes.array.isRequired,
-}
+  };

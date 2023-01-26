@@ -3,16 +3,17 @@ import PropTypes from 'prop-types'
 import css from '../ImageGalleryItem/ImageGalleryItem.module.css'
 
 export class ImageGalleryItem extends Component {
-    modalClick = () => {
-        this.props.getLargeImg(this.props.largeImg)
-        this.props.modal()
-      }
+    hadleClick = () => {
+        this.props.getLargeImage(this.props.largeImgUrl);
+        this.props.toggleModal();
+        console.log(this.props.largeImgUrl);
+      };
     
     render () {
-        const { img, tags } = this.props
+        const { imageUrl, tags } = this.props
         return (
-            <li className={css.ImageGalleryItem} onClick={this.modalClick}>
-                <img src={img} alt={tags} />
+            <li className={css.ImageGalleryItem} onClick={this.hadleClick}>
+                <img src={imageUrl} alt={tags} />
             </li>
         )
     }
