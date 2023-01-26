@@ -6,6 +6,8 @@ import { ImageGalleryItem } from './ImageGalleryItem/ImageGalleryItem';
 import { Modal } from './Modal/Modal';
 import { Button } from './Button/Button';
 import { Loader } from './Loader/Loader';
+import toast from 'react-hot-toast';
+import { pixabayApi } from 'services/pixabayApi';
 
 
 export class App extends Component {
@@ -17,6 +19,7 @@ export class App extends Component {
     largeImage: null,
     status: false,
     modal: false,
+    error: null,
   };
 
   handleSubmit = search => {
@@ -25,6 +28,34 @@ export class App extends Component {
 
   loadMore = () => {
     this.setState(({ page }) => ({ page: page + 1 }))
+  }
+
+
+  async componentDidUpdate(_,prevProps) {
+    const currentSearch = this.state.search
+    const prevSearch = prevProps.search
+    const currentPage = this.state.page
+    const prevPage = prevProps.page
+
+    if (prevSearch !== currentSearch || prevPage !== currentPage) {
+      this.statusChange(true)
+      try {
+        const data = await pixabayApi(currentSearch, currentPage)
+        if (data.hits.length === 0) {
+          return toast.error(`No find images`)
+        }
+        if (currentPage === 1) {
+          toast.success(`We found ${data.totalHits} images`)
+        }
+        this.imageList(data.hits)
+        this.totalHits(data.totalHits)
+      } catch (error) {
+        this.setState({ error })
+        return toast.error(`Please, try again later`)
+      } finally {
+        this.statusChange(false)
+      }
+    }
   }
 
   statusChange = value => {
@@ -58,8 +89,8 @@ export class App extends Component {
 
   render() {
     const {
-      search,
-      page,
+      // search,
+      // page,
       list,
       totalhits,
       largeImage,
@@ -70,13 +101,9 @@ export class App extends Component {
       <div>
         <Toaster />
         <Searchbar onSubmit={this.handleSubmit} />
+        {list.length > 0 && (
         <ImageGallery
-          search={search}
-          page={page}
           list={list}
-          imageList={this.imageList}
-          totalHits={this.totalHits}
-          statusChange={this.statusChange}
         >
           {list?.map(el => (
             <ImageGalleryItem
@@ -88,7 +115,7 @@ export class App extends Component {
               largeImages={this.largeImages}
             ></ImageGalleryItem>
           ))}
-        </ImageGallery>
+        </ImageGallery>)}
         {status && <Loader />}
         {modal && (
           <Modal 

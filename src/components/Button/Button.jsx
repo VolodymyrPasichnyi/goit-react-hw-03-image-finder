@@ -8,7 +8,7 @@ export const Button = ({ loadMore }) => {
       <button
         className={css.Button}
         type="button"
-        onClick={() => {loadMore()}}>Load more</button>
+        onClick={loadMore}>Load more</button>
     </div>
   );
 };
